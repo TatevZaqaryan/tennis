@@ -1,18 +1,9 @@
 import * as PIXI from 'pixi.js';
-import { Board } from './board/board';
-import { BoardConfig } from './config';
-import { LoseGame } from './loseGame';
-import { Queue } from './queue';
-import { Score } from './score';
+import { Area } from './area';
+import { areaConfig } from './config';
 
 export class Game extends PIXI.Application {
-    board: Board;
-    queue: Queue;
-    score: Score;
-    score1: Score;
-    los: LoseGame;
-
-    x: number[];
+    board: Area;
     constructor() {
         super({
             width: window.innerWidth,
@@ -29,6 +20,7 @@ export class Game extends PIXI.Application {
     }
 
     _onLoadComplete() {
+        this.buildBoard();
         console.warn('load complete');
     }
 
@@ -49,6 +41,19 @@ export class Game extends PIXI.Application {
 
     _resizeRenderer(width, height) {
         this.renderer.resize(width, height);
+    }
+    buildBoard() {
+        const { cell_width, cell_hight, line_style } = areaConfig;
+
+        this.board = new Area();
+        this.board.buildCell();
+        this.board.buildLine();
+        this.board.buildBall();
+        this.board.gateBuild();
+        this.board.pivot.set(cell_width, cell_hight);
+        this.board.position.set(this.screen.width, this.screen.height);
+        this.stage.addChild(this.board);
+        this.board._checkWorldBounds();
     }
 
     _update() {
